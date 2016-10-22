@@ -21,7 +21,7 @@ class App extends Component {
           <TopBar/>
             {this.props.children}
           <footer>
-            <div class="mui-container mui--text-center">
+            <div className="mui-container mui--text-center">
               Made with ♥ by <b>st patrick center.</b>
             </div>
           </footer>

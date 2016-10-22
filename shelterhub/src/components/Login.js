@@ -1,3 +1,6 @@
+import {connect} from 'react-redux';
+import { loginForm, loginFormSubmit } from "../actions";
+
 import React from 'react';
 import classNames from 'classnames';
 import TextField from 'material-ui/TextField';
@@ -12,13 +15,13 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
 const items = [
-  <MenuItem key={1} value={1} primaryText="General public" />,
-  <MenuItem key={2} value={2} primaryText="Continum Of Care" />,
+  <MenuItem key={0} value={0} primaryText="user" />,
+  <MenuItem key={1} value={1} primaryText="provider" />,
 ];
 
 
 
-const Login = ()=>{
+const LoginView = ({onSubmit, onUserTypeChange, onUserNameChanged, userType,  userName, userTypeName, password, onPassChange})=>{
 	return(
 		<Card className="card">
 		 <CardHeader
@@ -33,8 +36,8 @@ const Login = ()=>{
 	    </CardMedia>
 	    <br/>
 		    <SelectField
-	          // value={this.state.value}
-	          // onChange={this.handleChange}
+	          value={userType}
+	          onChange={onUserTypeChange}
 	          // floatingLabelText="Floating Label Text"
 	          floatingLabelFixed={true}
 	          hintText="Login as"
@@ -42,11 +45,15 @@ const Login = ()=>{
 	          {items}
 	        </SelectField><br/>
 			<TextField
+			onChange={onUserNameChanged}
+			value={userName}
 			hintText="User Name"
 			floatingLabelText="Please Enter User Name"
 			fullWidth={false}
 			/><br/>
 			<TextField
+			onChange={onPassChange}
+			value={password}
 			hintText="Password"
 			floatingLabelText="Please Enter Your Password"
 			type="password"
@@ -55,14 +62,57 @@ const Login = ()=>{
 			<FlatButton
 			  backgroundColor="#a4c639"
 			  hoverColor="#ff6600"
+			  rippleColor="#00F"
 			  icon={<ActionAndroid color={fullWhite} />}
+			  onTouchTap={onSubmit}
 			  // style={style}
-			  tooltip="top-center"
-			  tooltipPosition="top-center"
+			  // tooltip="top-center"
+			  // tooltipPosition="top-center"
 			/><br/>
 	    </CardActions><br/><br/>
 		</Card>
 		)
 }
+
+const mapStateToProps = (state) => ({
+	userType: state.loginRed.userType,
+	userTypeName: state.loginRed.userTypeName,
+	userName: state.loginRed.userName,
+	password: state.loginRed.password
+});
+
+const mapDispatchToProps = (dispatch) => ({
+	onSubmit: () => {
+		dispatch(loginForm({
+			actionType: 'onSubmit', //TODO
+		}))
+	},
+	onUserTypeChange: (element, key) => {
+		console.log('good!', key)
+		dispatch(loginForm({
+			actionType: 'onUserTypeChange',
+			userType: key,
+			userTypeName: element.target.innerHTML
+		}))
+	},
+	onUserNameChanged: (element) => {
+		dispatch(loginForm({
+			actionType: 'onUserNameChanged',
+			userName: element.target.value
+		}))
+	},
+	onPassChange: (element) => {
+		dispatch(loginForm({
+			actionType: 'onPassChange',
+			password: element.target.value
+		}))
+	}
+});
+
+const Login = connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(LoginView);
+
 
 export default Login;
