@@ -12,10 +12,38 @@ export const findShelter = ( payload ) => ({
 		type: FIND_SHELTER,
 		payload
 	});
-export function findShelterChanged ( payload ) {
+export function findShelterInit () {
 	return function ( dispatch, getStatem ){
-		console.log( ' HEy! ');
-	}
+	return fetch(`http://52.52.143.69/clients`, {
+                method: 'GET'
+            }).then(response => {
+                console.log('RESPONSE: ', response)
+                if(!response.ok){
+                    console.log(`Dude! Don\'t do this to me! ${response}`);
+                    alert(`Dude! Don\'t do this to me! ${response}`);
+                    return;
+                    dispatch(findShelter({
+                        status: 'failed'
+                    }));
+                }
+                return response.json()
+            }).then(json => {
+            	console.log('JSON: ', json)
+            	let listOfUsers = [];
+            	let listOfUsersId = [];
+            	let listOfUsersObj = [];
+            	for (var i = json._embedded.clients.length - 1; i >= 0; i--) {
+            		listOfUsers.push(json._embedded.clients[i].name)
+            		listOfUsersId.push(json._embedded.clients[i].id)
+            		listOfUsersObj.push(json._embedded.clients[i])
+            	}
+            	dispatch(findShelter({
+            			actionType: 'FetchedListOfUsers',
+            			listOfUsers: listOfUsers,
+            			listOfUsersId: listOfUsersId,
+            			listOfUsersObj: listOfUsersObj,
+                    }));
+            })	}
 }
 export function findShelterSubmit ( payload ) {
 	return function ( dispatch, getStatem ){
@@ -50,7 +78,7 @@ export function loginFormSubmit ( payload ) {
                     ...payload
             }));
 
-            return fetch(`http://52.52.143.69/login/${getState().loginRed.userTypeName}`, { //http://52.52.143.69/login/${getState().loginRed.userTypeName}
+            return fetch(`http://52.52.143.69/login/${getState().loginRed.userTypeName}`, {
                 method: 'POST',
                 headers: {
 				    // 'Accept': 'application/json',

@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import { findShelter, findShelterChanged, findShelterSubmit } from "../actions/";
+import { findShelter, findShelterInit, findShelterSubmit } from "../actions/";
 
 import React from 'react';
 import classNames from 'classnames';
@@ -16,6 +16,8 @@ import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
 import AutoComplete from 'material-ui/AutoComplete';
 import Toggle from 'material-ui/Toggle';
+import RefreshIndicator from 'material-ui/RefreshIndicator';
+
 
 
 
@@ -47,10 +49,36 @@ const styles = {
   submitBtn:{
   	minWidth: "100%",
   	// minHeight: 66
-  }
+  },
+  container: {
+    position: 'relative',
+  },
+  refresh: {
+    display: 'inline-block',
+    position: 'relative',
+  },
+}
+
+const Spinner = ({ isLoading }) => {
+	if( isLoading ){
+		return (
+			 <div style={styles.container}>
+			    <RefreshIndicator
+			      size={45}
+			      left={0}
+			      top={0}
+			      loadingColor="#FF9800"
+			      status="loading"
+			      style={styles.refresh}
+			    />
+			  </div>)
+	}else{
+		return null;
+	}
 }
 
 const FindShelterView = ({ 
+	isLoading,
 	listOfUsers,
 	clientName,
 	clientGender,
@@ -63,20 +91,22 @@ const FindShelterView = ({
 	clientIsPregnant,
 	clientIsEmployed,
 	onChange,
-	onSubmit
+	onSubmit,
+	onInit
 	 })=>{
+	if(listOfUsers.length < 1)onInit();
 	return(
 		<Card className="card">
 	    <CardMedia
 	      overlay={<CardTitle title="Finding a shelter" subtitle="Results will update to entered data" />}
-	    >
+	    ><Spinner isLoading={isLoading}/>
 	      <img src={bg2} />
 	    </CardMedia>
 	    	<Divider/>
 	    	<Divider/>
 		    <AutoComplete
 	          hintText="Enter the first and last name"
-	          dataSource={['a','aa','aaaa','aababa']}
+	          dataSource={listOfUsers}
 	          onUpdateInput={()=>{console.log('YYYYYYYYYYYAY')}}
 	          onNewRequest={()=>{console.log('Carrots..')}}
 	          floatingLabelText="First name / Last name"
@@ -84,7 +114,7 @@ const FindShelterView = ({
 	        />
 	         <SelectField
 	          value={clientGender}
-	          // onChange={onUserTypeChange}
+	          onChange={(a,b)=>{onChange('clientGender', b)}}
 	          // floatingLabelText="Floating Label Text"
 	          floatingLabelFixed={true}
 	          hintText="Gender"
@@ -94,7 +124,7 @@ const FindShelterView = ({
 	        </SelectField>
 	        <SelectField
 	          value={clientRace}
-	          // onChange={onUserTypeChange}
+	          onChange={(a,b)=>{onChange('clientRace', b)}}
 	          // floatingLabelText="Floating Label Text"
 	          floatingLabelFixed={true}
 	          hintText="Race"
@@ -103,7 +133,7 @@ const FindShelterView = ({
 	          {raceTypes}
 	        </SelectField>
 	        <TextField
-			// onChange={onUserNameChanged}
+			onChange={(a,b)=>{onChange('clientSocial', b)}}
 			value={clientSocial}
 			hintText="Social Security Number"
 			floatingLabelText="Please Enter Clients Social Security Number"
@@ -164,8 +194,6 @@ const FindShelterView = ({
 			  icon={<ActionAndroid color={fullWhite} />}
 			  // onTouchTap={onSubmit}
 			  style={styles.submitBtn}
-			  // tooltip="top-center"
-			  // tooltipPosition="top-center"
 			/><Divider/>
 	    </CardActions>
 
@@ -176,6 +204,7 @@ const FindShelterView = ({
 
 
 const mapStateToProps = (state) => ({
+	isLoading: state.findShelterRed.isLoading,
 	listOfUsers: state.findShelterRed.listOfUsers,
 	clientName: state.findShelterRed.clientName,
 	clientGender: state.findShelterRed.clientGender,
@@ -190,10 +219,14 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+	onInit: ()=>{
+		dispatch(findShelterInit())
+	},
 	onChange: (key, value) => {
-		console.log('payload', key, value)
-		dispatch(findShelterChanged({
-			actionType: 'onChange', //TODO
+		dispatch(findShelter({
+			actionType: 'onChange',
+			keyToChange: key,
+			valueToChange: value
 		}))
 	},
 	onSubmit: (payload) => {
