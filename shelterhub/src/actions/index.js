@@ -2,8 +2,30 @@ import { browserHistory } from 'react-router';
 import fetch from 'isomorphic-fetch';
 
 const LOGIN_FORM = 'LOGIN_FORM';
+const TOP_BAR = 'TOP_BAR';
+const FIND_SHELTER = 'FIND_SHELTER';
+
+////////////////////////////////////////////////////// FIND SHELTER
+///
+
+export const findShelter = ( payload ) => ({
+		type: FIND_SHELTER,
+		payload
+	});
+export function findShelterChanged ( payload ) {
+	return function ( dispatch, getStatem ){
+		console.log( ' HEy! ');
+	}
+}
+export function findShelterSubmit ( payload ) {
+	return function ( dispatch, getStatem ){
+		console.log( ' SuBmIt!! ');
+	}
+}
 
 
+////////////////////////////////////////////////////// LOGIN
+///
 export const loginForm = ( payload ) => {
 	return{
 	    type: LOGIN_FORM,
@@ -13,11 +35,12 @@ export const loginForm = ( payload ) => {
 
 export function loginFormSubmit ( payload ) {
     return function(dispatch, getState){
-
+    	if(!getState().loginRed.loggedIn) browserHistory.push('/login');
     	if( // This is where the form validation would happen
     		getState().loginRed.userType === null ||
     		getState().loginRed.username === '' ||
     		getState().loginRed.password === ''
+    		// false //TODO!
     		){
     		alert( 'DUDE!\nplease select a user type and enter the user name and password! ')
     		return;
@@ -27,16 +50,22 @@ export function loginFormSubmit ( payload ) {
                     ...payload
             }));
 
-            return fetch(`https://jsonplaceholder.typicode.com/users`, {
-                data: "json",
-                method: 'GET',
+            return fetch(`http://52.52.143.69/login/${getState().loginRed.userTypeName}`, { //http://52.52.143.69/login/${getState().loginRed.userTypeName}
+                method: 'POST',
                 headers: {
-                    Authorization: (`test`)
-                }
+				    // 'Accept': 'application/json',
+				    'Content-Type': 'application/json'
+				  },
+				   body: JSON.stringify({
+				    username: getState().loginRed.userName,
+				    password: getState().loginRed.password,
+				  })
             }).then(response => {
                 console.log('RESPONSE: ', response)
                 if(!response.ok){//TODO: needs work
+                    console.log(`Dude! Don\'t do this to me! ${response}`);
                     alert(`Dude! Don\'t do this to me! ${response}`);
+                    return;
                     dispatch(loginForm({
                         status: 'failed',
                         ...payload
@@ -45,10 +74,11 @@ export function loginFormSubmit ( payload ) {
                 return response.json()
             }).then(json => {
             	console.log('JSON: ', json)
-            	browserHistory.push('/provider');
+            	browserHistory.push('/findShelter');
             	dispatch(loginForm({
+            			...payload,
+            			actionType: 'loggedIn',
                         logedIn: true,
-                        ...payload
                     }));
             })
     }

@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import { loginForm, loginFormSubmit } from "../actions";
+import { loginForm, loginFormSubmit } from "../actions/";
 
 import React from 'react';
 import classNames from 'classnames';

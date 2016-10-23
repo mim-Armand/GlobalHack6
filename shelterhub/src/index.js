@@ -14,6 +14,7 @@ import createLogger from 'redux-logger';
 import App from './App';
 import Login from './components/Login';
 import ProviderDashboard from './components/ProviderDashboard';
+import FindShelter from './components/FindShelter';
 import './index.css';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -48,14 +49,17 @@ let store = createStore(
 	initialState,
 	enhancers);
 
-browserHistory.push('/login');
+// browserHistory.push('/login');
+browserHistory.push('/findShelter');
 
 ReactDOM.render(
 	<Provider store={store}>
 		<Router history={history}>
 			<Route path="/" component={App}>
 				<Route path="/login" component={Login}/>
-				<Route path="/provider" component={ProviderDashboard}/>
+				<Route path="/provider" component={ProviderDashboard}>
+				</Route>
+				<Route path="/findShelter" component={FindShelter}/>
 			</Route>
 		</Router>
 	</Provider>

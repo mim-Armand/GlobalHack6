@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import loginRed from './loginRed';
+import findShelterRed from './findShelterRed';
 
 
 
@@ -15,6 +16,7 @@ const emptyRed = (state = null, action) => {
 const AppReducer = combineReducers({
 	emptyRed,
 	loginRed,
+	findShelterRed,
 })
 
 export default AppReducer;
