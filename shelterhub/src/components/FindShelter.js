@@ -155,7 +155,7 @@ const FindShelterView = ({
 
 			<Toggle
 			  onToggle={(e,b)=>{onChange('clientIsVetran', b)}}
-		      label="Is Client a Vetran ? "
+		      label="Is Client a Veteran ? "
 		      style={styles.toggle}
 		      toggled={clientIsVetran}
 		    />
