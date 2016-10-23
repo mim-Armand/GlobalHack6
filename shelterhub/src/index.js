@@ -13,6 +13,7 @@ import createLogger from 'redux-logger';
 
 import App from './App';
 import Login from './components/Login';
+import ProviderDashboard from './components/ProviderDashboard';
 import './index.css';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -32,7 +33,20 @@ const enhancers = compose( // This is the same compose as found in Underscore or
 
 const history = browserHistory;
 
-let store = createStore(AppReducer);
+const initialState = {
+	loginRed:{
+		userType: null,
+		userTypeName: null,
+		userName: '',
+		password:'',
+		loggedIn: false
+	}
+}
+
+let store = createStore(
+	AppReducer,
+	initialState,
+	enhancers);
 
 browserHistory.push('/login');
 
@@ -41,7 +55,7 @@ ReactDOM.render(
 		<Router history={history}>
 			<Route path="/" component={App}>
 				<Route path="/login" component={Login}/>
-				<Route path="/app" />
+				<Route path="/provider" component={ProviderDashboard}/>
 			</Route>
 		</Router>
 	</Provider>

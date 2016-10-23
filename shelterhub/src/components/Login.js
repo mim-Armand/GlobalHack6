@@ -83,7 +83,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
 	onSubmit: () => {
-		dispatch(loginForm({
+		dispatch(loginFormSubmit({
 			actionType: 'onSubmit', //TODO
 		}))
 	},

@@ -2,11 +2,7 @@
 
 
 const loginRed = (state = {
-	userType: null,
-	userTypeName: null,
-	userName: '',
-	password:'',
-	loggedIn: false
+
 }, action) => {
 	switch ( action.type ) {
 		case 'LOGIN_FORM':
