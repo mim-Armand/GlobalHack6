@@ -49,8 +49,8 @@ let store = createStore(
 	initialState,
 	enhancers);
 
-// browserHistory.push('/login');
-browserHistory.push('/findShelter');
+browserHistory.push('/login');
+// browserHistory.push('/findShelter');
 
 ReactDOM.render(
 	<Provider store={store}>

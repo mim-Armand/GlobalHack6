@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import { findShelter, findShelterInit, findShelterSubmit } from "../actions/";
+import { findShelter, findShelterInit, findShelterSubmit, fillTheForm } from "../actions/";
 
 import React from 'react';
 import classNames from 'classnames';
@@ -10,6 +10,7 @@ import FontIcon from 'material-ui/FontIcon';
 import ActionAndroid from 'material-ui/svg-icons/action/pageview';
 import {fullWhite} from 'material-ui/styles/colors';
 import bg2 from '../img/bg2.jpg';
+import bg3 from '../img/bg5.jpg';
 import key_icon from '../img/key_icon.png';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -20,23 +21,32 @@ import RefreshIndicator from 'material-ui/RefreshIndicator';
 
 
 
+import {List, ListItem} from 'material-ui/List';
+import ActionInfo from 'material-ui/svg-icons/action/info';
+import Subheader from 'material-ui/Subheader';
+import Avatar from 'material-ui/Avatar';
+import FileFolder from 'material-ui/svg-icons/notification/airline-seat-flat';
+import ActionAssignment from 'material-ui/svg-icons/action/assignment';
+import {blue500, red500} from 'material-ui/styles/colors';
+import EditorInsertChart from 'material-ui/svg-icons/editor/insert-chart';
+
+
+
 
 const genderTypes = [
-  <MenuItem key={0} value={0} primaryText="Not Known" />,
-  <MenuItem key={1} value={1} primaryText="Female" />,
-  <MenuItem key={2} value={2} primaryText="Male" />,
-  <MenuItem key={3} value={3} primaryText="Others" />,
+  <MenuItem key={1} value={"MALE"} primaryText="MALE" />,
+  <MenuItem key={2} value={"FEMALE"} primaryText="FEMALE" />,
+  <MenuItem key={3} value={"UNDISCLOSED"} primaryText="UNDISCLOSED" />,
 ];
 
 
 const raceTypes = [
-  <MenuItem key={0} value={0} primaryText="Not Known" />,
-  <MenuItem key={1} value={1} primaryText="American Indian or Alaska Native" />,
-  <MenuItem key={2} value={2} primaryText="Asian" />,
-  <MenuItem key={3} value={3} primaryText="Black or African American" />,
-  <MenuItem key={4} value={4} primaryText="Native Hawaiian or Other Pacific Islander" />,
-  <MenuItem key={5} value={5} primaryText="White" />,
-  <MenuItem key={6} value={6} primaryText="Other" />,
+  <MenuItem key={0} value={"ASIAN"} primaryText="ASIAN" />,
+  <MenuItem key={1} value={"CAUCASIAN"} primaryText="CAUCASIAN" />,
+  <MenuItem key={2} value={"AFRICAN_AMERICAN"} primaryText="AFRICAN_AMERICAN" />,
+  <MenuItem key={3} value={"AMERICAN_INDIAN"} primaryText="AMERICAN_INDIAN" />,
+  <MenuItem key={4} value={"HISPANIC"} primaryText="HISPANIC" />,
+  <MenuItem key={5} value={"OTHER"} primaryText="OTHER" />,
 ];
 
 const styles = {
@@ -77,7 +87,8 @@ const Spinner = ({ isLoading }) => {
 	}
 }
 
-const FindShelterView = ({ 
+const FindShelterView = ({
+	sheltersData,
 	isLoading,
 	listOfUsers,
 	clientName,
@@ -92,7 +103,9 @@ const FindShelterView = ({
 	clientIsEmployed,
 	onChange,
 	onSubmit,
-	onInit
+	onInit,
+	onAutocompSelected,
+	currentClient
 	 })=>{
 	if(listOfUsers.length < 1)onInit();
 	return(
@@ -108,7 +121,7 @@ const FindShelterView = ({
 	          hintText="Enter the first and last name"
 	          dataSource={listOfUsers}
 	          onUpdateInput={()=>{console.log('YYYYYYYYYYYAY')}}
-	          onNewRequest={()=>{console.log('Carrots..')}}
+	          onNewRequest={(name,index)=>{onAutocompSelected(name, index)}}
 	          floatingLabelText="First name / Last name"
 	          fullWidth={true}
 	        />
@@ -196,8 +209,42 @@ const FindShelterView = ({
 			  style={styles.submitBtn}
 			/><Divider/>
 	    </CardActions>
-
+    	<Results data={sheltersData}/>
 	    </Card>
+		)
+}
+
+
+const Results = ({data})=>{
+	return(
+		<Card className="card">
+	    <CardMedia
+	      overlay={<CardTitle title="Results" subtitle="Available shelters in the area" />}
+	    ><Spinner isLoading={false}/>
+	      <img src={bg3} />
+	    </CardMedia>
+	    	<Divider/>
+		     <List>
+		     {data.map(function(shelterData, i){
+		     	console.log('shelterData', shelterData)
+		     	var clr = ((shelterData.name=='St. Patricks') ? blue500 : red500 )
+		     	return(
+		     		<ListItem
+		     			key={i}
+				        leftAvatar={<Avatar icon={<FileFolder />}
+				        			backgroundColor={clr}/>}
+				        rightIcon={<ActionInfo />}
+				        primaryText={shelterData.name}
+				        secondaryText={shelterData.address}
+				      />
+				      )
+			    })}
+    </List>
+    <Divider inset={true} />
+		    <CardActions>
+		      <FlatButton label="More!" />
+		    </CardActions>
+    	</Card>
 		)
 }
 
@@ -215,7 +262,9 @@ const mapStateToProps = (state) => ({
 	clientHasAddiction: state.findShelterRed.clientHasAddiction,
 	clientHasChildren: state.findShelterRed.clientHasChildren,
 	clientIsPregnant: state.findShelterRed.clientIsPregnant,
-	clientIsEmployed: state.findShelterRed.clientIsEmployed
+	clientIsEmployed: state.findShelterRed.clientIsEmployed,
+	currentClient: state.findShelterRed.currentClient,
+	sheltersData: state.findShelterRed.sheltersData,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -228,8 +277,18 @@ const mapDispatchToProps = (dispatch) => ({
 			keyToChange: key,
 			valueToChange: value
 		}))
+		dispatch(findShelterSubmit({
+			actionType: 'onSubmit', //TODO
+		}))
+	},
+	onAutocompSelected: (name, index)=>{
+		dispatch(fillTheForm(name, index))
+		dispatch(findShelterSubmit({
+			actionType: 'onSubmit', //TODO
+		}))
 	},
 	onSubmit: (payload) => {
+		console.log('SUBBBBB')
 		dispatch(findShelterSubmit({
 			actionType: 'onSubmit', //TODO
 		}))

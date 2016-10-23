@@ -38,6 +38,7 @@ export function findShelterInit () {
             		listOfUsersObj.push(json._embedded.clients[i])
             	}
             	dispatch(findShelter({
+            			isLoading: false,
             			actionType: 'FetchedListOfUsers',
             			listOfUsers: listOfUsers,
             			listOfUsersId: listOfUsersId,
@@ -45,10 +46,66 @@ export function findShelterInit () {
                     }));
             })	}
 }
-export function findShelterSubmit ( payload ) {
-	return function ( dispatch, getStatem ){
-		console.log( ' SuBmIt!! ');
+export function fillTheForm (name, index){
+	return function ( dispatch, getState ){
+		dispatch(findShelter({
+			clientName: getState().findShelterRed.listOfUsersObj[index].name,
+			clientGender: getState().findShelterRed.listOfUsersObj[index].gender,
+			clientRace: getState().findShelterRed.listOfUsersObj[index].clientRace,
+			clientSocial: getState().findShelterRed.listOfUsersObj[index].social,
+			clientIsVetran: getState().findShelterRed.listOfUsersObj[index].isVeteran,
+			clientHasDisabilities: getState().findShelterRed.listOfUsersObj[index].hasDisabilities,
+			clientHasAddiction: getState().findShelterRed.listOfUsersObj[index].addictionHistory,
+			clientHasChildren: getState().findShelterRed.listOfUsersObj[index].hasChildren,
+			clientIsPregnant: getState().findShelterRed.listOfUsersObj[index].isPregnant,
+			clientIsEmployed: getState().findShelterRed.listOfUsersObj[index].employed
+		}))
 	}
+}
+export function findShelterSubmit ( payload ) {
+	return function ( dispatch, getState ){
+		let crntobj = getState().findShelterRed.listOfUsersObj[0];
+		crntobj.name= getState().findShelterRed.clientName;
+		crntobj.gender= getState().findShelterRed.clientGender;
+		crntobj.clientRace= getState().findShelterRed.clientRace;
+		crntobj.social= getState().findShelterRed.clientSocial;
+		crntobj.isVeteran= getState().findShelterRed.clientIsVetran;
+		crntobj.hasDisabilities= getState().findShelterRed.clientHasDisabilities;
+		crntobj.addictionHistory= getState().findShelterRed.clientHasAddiction;
+		crntobj.hasChildren= getState().findShelterRed.clientHasChildren;
+		crntobj.isPregnant= getState().findShelterRed.clientIsPregnant;
+		crntobj.employed= getState().findShelterRed.clientIsEmployed;
+		console.log('QQQQQQQQQQQQQQ', crntobj)
+	dispatch(findShelter({
+        			currentClient: crntobj
+                }));
+	return fetch(`http://52.52.143.69/services/match`, {
+                method: 'POST',
+                headers: {
+				    // 'Accept': 'application/json',
+				    'Content-Type': 'application/json'
+				  },
+				   body: JSON.stringify(
+				   	crntobj
+				  )
+            }).then(response => {
+                console.log('RESPONSE: ', response)
+                if(!response.ok){
+                    console.log(`Dude! Don\'t do this to me! ${response}`);
+                    alert(`Dude! Don\'t do this to me! ${response}`);
+                    return;
+                    dispatch(findShelter({
+                        status: 'failed'
+                    }));
+                }
+                return response.json()
+            }).then(json => {
+            	console.log('------------------->JSON: ', json)
+            	dispatch(findShelter({
+            			isLoading: false,
+            			sheltersData: json,
+                    }));
+            })	}
 }
 
 

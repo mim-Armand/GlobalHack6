@@ -12,7 +12,8 @@ const findShelterRed = (state={
 	clientHasAddiction: false,
 	clientHasChildren: false,
 	clientIsPregnant: false,
-	clientIsEmployed: false
+	clientIsEmployed: false,
+	sheltersData: []
 }, action) => {
 	switch( action.type ) {
 		case 'FIND_SHELTER':
@@ -23,13 +24,14 @@ const findShelterRed = (state={
 			})
 		}else if( action.payload.actionType === 'FetchedListOfUsers' ){
 			return Object.assign({}, state, {
+				...action.payload,
 				listOfUsersObj: action.payload.listOfUsersObj,
 				listOfUsers: action.payload.listOfUsers,
 				listOfUsersId: action.payload.listOfUsersId
 			})
 		}
 		return Object.assign({}, state, {
-			//TODO
+			...action.payload
 		})
 		default:
 			return state;

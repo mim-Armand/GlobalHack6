@@ -15,9 +15,6 @@
     "react-router": "^2.8.1",
     "react-tap-event-plugin": "^1.0.0",
     "redux": "^3.6.0",
-    "redux-devtools": "^3.3.1",
-    "redux-devtools-dispatch": "@latest",
-    "redux-devtools-log-monitor": "^1.1.0",
     "redux-logger": "^2.7.0",
     "redux-slider-monitor": "^1.0.7",
     "redux-thunk": "^2.1.0"
